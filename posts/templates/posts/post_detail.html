@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="masthead">
+    <div class="container">
+        <div class="row g-0 align-items-center">
+            <div class="col-md-6 masthead-text">
+                <!-- Post Title -->
+                <h1 class="post-title">{{ post.title }}</h1>
+                <!-- Post Metadata -->
+                <p class="post-subtitle">{{ post.author }} | {{ post.created_on|date:"F d, Y" }}</p>
+            </div>
+            <div class="d-none d-md-block col-md-6 masthead-image">
+                {% if "placeholder" in post.featured_image.url %}
+                <img src="{% static 'images/default_post_image.jpeg' %}" class="img-fluid" alt="Placeholder">
+                {% else %}
+                <img src="{{ post.featured_image.url }}" class="img-fluid" alt="{{ post.title }}">
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-4">
+    <!-- Post Content -->
+    <div class="row">
+        <div class="col card mb-4">
+            <div class="card-body">
+                <article class="card-text">
+                    {{ post.content|safe }}
+                </article>
+            </div>
+        </div>
+    </div>
+
+    <!-- Like/Unlike Post -->
+    <form class="like-form" action="{% url 'like_post' post.slug %}" method="POST" data-post-slug="{{ post.slug }}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-primary like-button">
+            {% if user_liked_posts.post.id %}
+                Unlike
+            {% else %}
+                Like
+            {% endif %}
+        </button>
+    </form>
+    <p class="like-count" id="like-count-{{ post.slug }}">{{ post.likes.count }} Likes</p>
+    
+
+    <!-- Comments Section -->
+    <div class="row">
+        <div class="col-12">
+            <strong class="text-secondary">
+                <i class="far fa-comments"></i> {{ comments|length }} Comments
+            </strong>
+            <hr>
+        </div>
+    </div>
+    <div class="row">
+        <!-- Display Comments -->
+        <div class="col-md-8 card mb-4">
+            <h3>Comments:</h3>
+            <div class="card-body">
+                {% for comment in comments %}
+                <div class="p-2 comments">
+                    <p class="font-weight-bold">
+                        {{ comment.author }}
+                        <span class="font-weight-normal text-muted">
+                            {{ comment.created_on|date:"F d, Y h:i A" }}
+                        </span> wrote:
+                    </p>
+                    <div id="comment{{ comment.id }}">
+                        {{ comment.body|linebreaks }}
+                    </div>
+                    <!-- Like/Unlike Comment with Counter -->
+                    {% if user.is_authenticated %}
+                    <button 
+                        class="btn btn-sm btn-primary btn-like {% if user_liked_comments.comment.id %}liked{% endif %}" 
+                        data-comment_id="{{ comment.id }}" 
+                        data-post_slug="{{ post.slug }}">
+                        {% if user_liked_comments.comment.id %}Unlike{% else %}Like{% endif %}
+                    </button>
+                    <!-- Like Count -->
+                    <p id="like-count-{{ comment.id }}">{{ comment.likes.count }} like(s)</p>
+                    {% endif %}
+                    {% if user.is_authenticated and comment.author == user %}
+                    <button class="btn btn-sm btn-danger btn-delete" data-comment_id="{{ comment.id }}">Delete</button>
+                    <button class="btn btn-sm btn-secondary btn-edit" data-comment_id="{{ comment.id }}">Edit</button>
+                    {% endif %}
+                </div>
+                <hr>
+                {% empty %}
+                <p>No comments yet. Be the first to comment!</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Comment Form -->
+        <div class="col-md-4 card mb-4">
+            <div class="card-body">
+                {% if user.is_authenticated %}
+                <h3>Leave a Comment:</h3>
+                <p class="text-muted">Posting as: {{ user.username }}</p>
+                <form id="commentForm" method="post">
+                    {% csrf_token %}
+                    {{ comment_form|crispy }}
+                    <button id="submitButton" type="submit" class="btn btn-primary mt-2">Submit</button>
+                </form>
+                {% else %}
+                <p>Please <a href="{% url 'account_login' %}">log in</a> to leave a comment.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Delete Comment?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete your comment? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a id="deleteConfirm" href="#" class="btn btn-danger">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block extras %}
+<script>
+    var csrfToken = "{{ csrf_token }}"; 
+</script>
+<script src="{% static 'js/comments.js' %}"></script>
+<script src="{% static 'js/like_comment.js' %}"></script>
+{% endblock extras %}

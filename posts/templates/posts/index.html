@@ -29,6 +29,23 @@
                             </a>
                             <hr />
                             <p class="card-text text-muted h6">{{ post.created_on }}</p>
+                            {% if user.is_authenticated %}
+                                <form method="POST" action="{% url 'like_post' post.slug %}" class="like-form" data-post-slug="{{ post.slug }}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="like-button btn btn-outline-primary">
+                                        {% if user_liked_post %}
+                                            Unlike
+                                        {% else %}
+                                            Like
+                                        {% endif %}
+                                    </button>
+                                </form>
+                            {% else %}
+                                <p><a href="{% url 'login' %}">Login</a> to like this post.</p>
+                            {% endif %}
+
+                            <!-- Display the number of likes -->
+                            <p class="like-count" id="like-count-{{ post.slug }}">{{ post.likes.count }} Likes</p>
                         </div>
                     </div>
                 </div>
