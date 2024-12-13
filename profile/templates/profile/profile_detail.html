@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Profile - {{ profile.user.username }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header text-center">
+                    <h3>{{ profile.user.username }}'s Profile</h3>
+                </div>
+                <div class="card-body text-center">
+                    <!-- Profile Image -->
+                    {% if profile.profile_picture %}
+                    <img src="{{ profile.profile_picture.url }}" class="rounded-circle mb-3" alt="Profile Picture"
+                        width="150" height="150">
+                    {% else %}
+                    <img src="{% static 'images/default_pfp.jpg' %}" class="rounded-circle mb-3"
+                        alt="Default Profile Picture" width="150" height="150">
+                    {% endif %}
+
+                    <!-- Username -->
+                    <h4>{{ profile.user.username }}</h4>
+
+                    <!-- Bio -->
+                    <p class="text-muted">{{ profile.bio|default:"its empty here..." }}</p>
+
+                    <!-- Additional Info (optional) -->
+                    <ul class="list-group list-group-flush mt-4">
+                        <li class="list-group-item">
+                            <strong>Date Joined:</strong> {{ profile.user.date_joined|date:"F j, Y" }}
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="#" class="btn btn-primary">Edit Profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
