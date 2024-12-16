@@ -6,6 +6,7 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
+            <!-- Profile Card -->
             <div class="card shadow">
                 <div class="card-header text-center">
                     <h3>{{ profile.user.username }}'s Profile</h3>
@@ -13,8 +14,9 @@
                 <div class="card-body text-center">
                     <!-- Profile Image -->
                     {% if profile.profile_picture %}
-                    <img src="{{ profile.profile_picture.url }}" class="rounded-circle mb-3" alt="Profile Picture"
-                        width="150" height="150">
+                    <img src="{% if profile.profile_picture %}{{ profile.profile_picture.url }}{% else %}{% static 'images/default_pfp.jpg' %}{% endif %}"
+                        class="rounded-circle mb-3" alt="{{ profile.user.username }}'s profile picture" width="150"
+                        height="150">
                     {% else %}
                     <img src="{% static 'images/default_pfp.jpg' %}" class="rounded-circle mb-3"
                         alt="Default Profile Picture" width="150" height="150">
@@ -24,9 +26,9 @@
                     <h4>{{ profile.user.username }}</h4>
 
                     <!-- Bio -->
-                    <p class="text-muted">{{ profile.bio|default:"its empty here..." }}</p>
+                    <p class="text-muted">{{ profile.bio|default:"It's empty here..." }}</p>
 
-                    <!-- Additional Info (optional) -->
+                    <!-- Additional Info -->
                     <ul class="list-group list-group-flush mt-4">
                         <li class="list-group-item">
                             <strong>Date Joined:</strong> {{ profile.user.date_joined|date:"F j, Y" }}
@@ -34,7 +36,30 @@
                     </ul>
                 </div>
                 <div class="card-footer text-center">
-                    <a href="#" class="btn btn-primary">Edit Profile</a>
+                    {% if request.user == profile.user %}
+                    <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- User's Posts Section -->
+            <div class="card shadow mt-5">
+                <div class="card-header text-center">
+                    <h4>{{ profile.user.username }}'s Posts</h4>
+                </div>
+                <div class="card-body">
+                    {% if posts %}
+                    <ul class="list-group">
+                        {% for post in posts %}
+                        <li class="list-group-item">
+                            <a href="{% url 'post_detail' post.id %}">{{ post.title }}</a>
+                            <p class="text-muted small mb-0">Published on {{ post.created_at|date:"F j, Y" }}</p>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-center text-muted">No posts yet.</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
