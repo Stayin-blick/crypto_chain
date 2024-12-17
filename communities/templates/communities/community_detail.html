@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ community.name }} ({{ community.ticker }})</h2>
+<p>{{ community.bio }}</p>
+
+<h3>Posts in {{ community.name }}</h3>
+{% if posts %}
+    <ul>
+        {% for post in posts %}
+        <li>
+            <h4>{{ post.title }}</h4>
+            <p>{{ post.content }}</p>
+            <p>Posted by: {{ post.user.username }} on {{ post.created_on }}</p>
+            <a href="#">Comment</a> | <a href="#">Like</a>  
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No posts available in this community yet.</p>
+{% endif %}
+{% endblock %}

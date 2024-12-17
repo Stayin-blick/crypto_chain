@@ -1,5 +1,5 @@
 from django import forms
-from .models import Post, Comment
+from .models import Post, Comment, Community
 
 class PostForm(forms.ModelForm):
     class Meta:
@@ -9,6 +9,8 @@ class PostForm(forms.ModelForm):
             'content': forms.Textarea(attrs={'rows': 5}),
             'crypto_ticker': forms.TextInput(attrs={'placeholder': 'e.g., BTC'}),
         }
+
+    community = forms.ModelChoiceField(queryset=Community.objects.all(), required=False, empty_label="Select a community (Optional)")
 
 
 class CommentForm(forms.ModelForm):

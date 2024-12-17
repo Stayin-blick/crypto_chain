@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-from cloudinary.models import CloudinaryField
+from communities.models import Community
+from cloudinary.models import CloudinaryField 
 
 
 class Post(models.Model):
@@ -18,6 +19,7 @@ class Post(models.Model):
         max_length=50, blank=True, null=True,
         help_text="Enter the cryptocurrency symbol (e.g., BTC for Bitcoin)."
     )
+    community = models.ForeignKey(Community, on_delete=models.CASCADE, related_name="posts", null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
 
@@ -69,4 +71,3 @@ class Like(models.Model):
             models.UniqueConstraint(fields=['user', 'post'], name='unique_user_post_like'),
             models.UniqueConstraint(fields=['user', 'comment'], name='unique_user_comment_like'),
         ]
-        
