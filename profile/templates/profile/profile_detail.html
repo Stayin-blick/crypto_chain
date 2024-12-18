@@ -24,7 +24,16 @@
 
                     <!-- Username -->
                     <h4>{{ profile.user.username }}</h4>
-
+                    <h3>Followed Communities</h3>
+                    <ul>
+                        {% for community in followed_communities %}
+                        <li>
+                            <a href="{% url 'community_detail' community.ticker %}">{{ community.name }}</a>
+                        </li>
+                        {% empty %}
+                        <li>No communities followed yet.</li>
+                        {% endfor %}
+                    </ul>
                     <!-- Bio -->
                     <p class="text-muted">{{ profile.bio|default:"It's empty here..." }}</p>
 
@@ -52,7 +61,7 @@
                     <ul class="list-group">
                         {% for post in posts %}
                         <li class="list-group-item">
-                            <a href="{% url 'post_detail' post.id %}">{{ post.title }}</a>
+                            <a href="{% url 'post_detail' post.slug %}">{{ post.title }}</a>
                             <p class="text-muted small mb-0">Published on {{ post.created_at|date:"F j, Y" }}</p>
                         </li>
                         {% endfor %}
