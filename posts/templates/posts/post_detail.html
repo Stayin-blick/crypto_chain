@@ -11,6 +11,13 @@
                 <h1 class="post-title">{{ post.title }}</h1>
                 <!-- Post Metadata -->
                 <p class="post-subtitle">{{ post.author }} | {{ post.created_on|date:"F d, Y" }}</p>
+                {% if post.community %}
+                    <p class="card-text">
+                        <a href="{% url 'community_detail' post.community.ticker %}">
+                            {{ post.community.name }}
+                        </a>
+                    </p>
+                {% endif %}
             </div>
             <div class="d-none d-md-block col-md-6 masthead-image">
                 {% if "placeholder" in post.featured_image.url %}

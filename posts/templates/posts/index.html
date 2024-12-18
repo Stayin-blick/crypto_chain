@@ -30,6 +30,13 @@
                                 <h2 class="card-title">{{ post.title }}</h2>
                                 <p class="card-text">{{ post.excerpt }}</p>
                             </a>
+                            {% if post.community %}
+                            <p class="card-text">
+                                <a href="{% url 'community_detail' post.community.ticker %}">
+                                    {{ post.community.name }}
+                                </a>
+                            </p>
+                            {% endif %}
                             <hr />
                             <p class="card-text text-muted h6">{{ post.created_on }}</p>
                             {% if user.is_authenticated %}
